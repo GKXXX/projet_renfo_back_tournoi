@@ -26,7 +26,7 @@ class TeamTestCase(TestCase):
     def test_team_show_match(self):
         team = Team.objects.create(name='Team 1')
         response = self.client.get(reverse('team_show_match', args=(team.id,)))
-        self.assertEqual(response.status_code, 404)  # No matches available initially
+        self.assertEqual(response.status_code, 404)  
 
 class TournamentTestCase(TestCase):
     def setUp(self):
@@ -35,15 +35,11 @@ class TournamentTestCase(TestCase):
     def test_tournament_show_match(self):
         tournament = Tournament.objects.create(name='Tournament 1')
         response = self.client.get(reverse('tournament_show_match', args=(tournament.id,)))
-        self.assertEqual(response.status_code, 404)  # No matches available initially
+        self.assertEqual(response.status_code, 404)  
 
-    # Add more test cases for other endpoints related to tournaments
+    
 
-class MatchTestCase(TestCase):
-    def setUp(self):
-        self.client = Client()
 
-    # Add test cases for match-related endpoints
 
 class AssignPlayerToTeamTestCase(TestCase):
     def setUp(self):
