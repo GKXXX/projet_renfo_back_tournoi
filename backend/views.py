@@ -74,7 +74,7 @@ def AssignTeamToTournament(request,idPlayer,idTeam,idTournament):
 def MatchResult(request,idMatch,idWinner):
   try: 
     match = get_object_or_404(pk=idMatch,klass=Match)
-    match.winner = idWinner
+    match.winner = get_object_or_404(pk=idWinner,klass=Player)
     match.save()
     data={"message":"Winner successfully added."}
     return JsonResponse(data,status=200)
@@ -84,14 +84,7 @@ def MatchResult(request,idMatch,idWinner):
 def MatchInfo(request,idMatch):
   try:
     match = get_object_or_404(pk=idMatch,klass=Match)
-    tournament = get_object_or_404(pk=match.tournament,klass=Tournament)
-    serialized_object = {
-      "equipes":match.teams,
-      "tournament":{
-        "name":tournament.name
-      },
-      "winner":match.winner
-    }
+    serialized_object = match.serialize()
     return JsonResponse(serialized_object)
   except:
     return JsonResponse({"error": "Not found"}, status=404)
@@ -123,9 +116,9 @@ def TournamentDetails(request,idTournament):
 def PlayerUpdate(request,idPlayer):
   try:
     player = get_object_or_404(pk=idPlayer,klass=Player)
-    if request.POST['firstName'] != None:
+    if request.POST['firstName']:
       player.firstName = request.firstName
-    if request.POST['lastName'] != None:
+    if request.POST['lastName']:
       player.lastName = request.lastName
     player.save()
     data = {

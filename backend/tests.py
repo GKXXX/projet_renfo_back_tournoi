@@ -8,13 +8,13 @@ class PlayerTestCase(TestCase):
         self.client = Client()
 
     def test_player_sign_up(self):
-        response = self.client.post('/player-sign-up/', {'firstName': 'John', 'lastName': 'Doe'})
+        response = self.client.post(reverse('player_signup'), {'firstName': 'John', 'lastName': 'Doe'})
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertEqual(data['message'], 'Sign up done.')
 
     def test_player_sign_up_missing_data(self):
-        response = self.client.post('/player-sign-up/', {'firstName': 'John'})
+        response = self.client.post(reverse('player_signup'), {'firstName': 'John'})
         self.assertEqual(response.status_code, 500)
         data = json.loads(response.content)
         self.assertEqual(data['message'], 'Some fields are lacking data.')
@@ -115,8 +115,7 @@ class MatchInfoTestCase(TestCase):
         response = self.client.get(reverse('match_info', args=(self.match.id,)))
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertIn('equipes', data)
-        self.assertIn('tournament', data)
+        self.assertIn('teams', data)
         self.assertIn('winner', data)
 
     def test_match_info_invalid_match(self):
@@ -130,6 +129,7 @@ class TournamentWinningMatchTestCase(TestCase):
         self.team = Team.objects.create(name='Team 1')
         self.match = Match.objects.create(tournament=self.tournament)
         self.match.teams.add(self.team)
+        self.match.save()
 
     def test_tournament_winning_match(self):
         response = self.client.post(reverse('tournament_winning_match', args=(self.match.id,)))
@@ -165,8 +165,7 @@ class PlayerUpdateTestCase(TestCase):
 
     def test_player_update(self):
       data = {'firstName': 'Jane'}
-      url = reverse('player_update',args=(self.player.id,))
-      response = self.client.post(url, data=data)
+      response = self.client.post(reverse('player_update',args=(self.player.id,)), data=data)
       self.assertEqual(response.status_code, 200)
       self.player.refresh_from_db()
       self.assertEqual(self.player.firstName, 'Jane')
